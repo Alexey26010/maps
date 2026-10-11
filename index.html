@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Синхрон — Идеальный досуг</title>
+
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=9b618917-6532-41ec-868b-b92215ade898" type="text/javascript"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #ffffff;
+            color: #333333;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+            box-sizing: border-box; 
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 40px;
+            background: #ffffff;
+            border-bottom: 2px solid #f0f0f0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #5c4033;
+            letter-spacing: 0.5px;
+        }
+        .logo span { color: #3eb489; }
+
+        nav a {
+            margin-left: 22px;
+            color: #5c4033;
+            font-weight: 600;
+            text-decoration: none;
+            padding-bottom: 4px;
+            border-bottom: 2px solid transparent;
+            transition: color .25s, border-color .25s;
+        }
+        nav a:hover {
+            color: #3eb489;
+            border-bottom-color: #3eb489;
+        }
+
+        section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 40px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 34px;
+            color: #5c4033;
+            margin: 0 0 45px;
+            position: relative;
+        }
+        .section-title::after {
+            content: "";
+            display: block;
+            width: 70px;
+            height: 4px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #3eb489, #5c4033);
+            margin: 14px auto 0;
+        }
+
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 50px;
+            min-height: calc(100vh - 90px);
+        }
+        .hero-text { flex: 1; }
+        .hero-text h1 {
+            font-size: 48px;
+            line-height: 1.15;
+            color: #5c4033;
+            margin: 0 0 20px;
+        }
+        .hero-text h1 em {
+            font-style: normal;
+            color: #3eb489;
+        }
+        .hero-text p {
+            font-size: 18px;
+            color: #666;
+            margin: 0 0 32px;
+        }
+        .hero-image {
+            flex: 1;
+            text-align: center;
+            font-size: 140px;
+            user-select: none;
+            filter: drop-shadow(0 12px 24px rgba(62,180,137,0.25));
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 13px 30px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 15px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform .2s, background-color .2s, box-shadow .2s;
+        }
+        .btn-primary {
+            background: #3eb489;
+            color: #ffffff;
+            border: 2px solid #3eb489;
+            margin-right: 15px;
+            box-shadow: 0 6px 18px rgba(62,180,137,0.35);
+        }
+        .btn-primary:hover {
+            background: #359d77;
+            border-color: #359d77;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(62,180,137,0.45);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: #5c4033;
+            border: 2px solid #5c4033;
+        }
+        .btn-secondary:hover {
+            background: #f9f6f4;
+            transform: translateY(-2px);
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 28px;
+            border-radius: 16px;
+            border: 1px solid #eeeeee;
+            border-left: 5px solid #5c4033;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+            transition: transform .25s, box-shadow .25s;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+        }
+        .card h3 {
+            color: #5c4033;
+            margin: 0 0 12px;
+            font-size: 19px;
+        }
+        .card p { margin: 0; color: #666; }
+
+        .solution-card {
+            border-left-color: #3eb489;
+            background: linear-gradient(180deg, #ffffff 0%, #f4fbf8 100%);
+        }
+
+        .steps {
+            display: flex;
+            gap: 22px;
+        }
+        .step {
+            flex: 1;
+            text-align: center;
+            background: #ffffff;
+            padding: 26px 20px;
+            border: 1px solid #eeeeee;
+            border-radius: 14px;
+            transition: transform .25s, border-color .25s, box-shadow .25s;
+        }
+        .step:hover {
+            transform: translateY(-4px);
+            border-color: #3eb489;
+            box-shadow: 0 10px 24px rgba(62,180,137,0.12);
+        }
+        .step-num {
+            width: 44px;
+            height: 44px;
+            margin: 0 auto 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #3eb489;
+            background: #e8f7f2;
+            border: 2px solid #3eb489;
+            border-radius: 50%;
+        }
+        .step h4 { margin: 0 0 8px; color: #5c4033; }
+        .step p { margin: 0; color: #666; font-size: 14px; }
+
+        .app-block {
+            margin-top: 20px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border: 1px solid #e6e6e6;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 14px 44px rgba(0,0,0,0.07);
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            background: #fafafa;
+            border-bottom: 1px solid #eeeeee;
+            overflow-x: auto;
+        }
+
+        .filter-btn {
+            padding: 9px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #5c4033;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 22px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all .25s;
+        }
+        .filter-btn:hover { background: #e8f7f2; border-color: #3eb489; }
+        .filter-btn.active {
+            color: #ffffff;
+            background: #3eb489;
+            border-color: #3eb489;
+            box-shadow: 0 4px 12px rgba(62,180,137,0.35);
+        }
+
+        .map-layout {
+            position: relative;
+            flex: 1;
+        }
+        #map { width: 100%; height: 100%; }
+
+        .sidebar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 5;
+            width: 320px;
+            max-height: calc(100% - 40px);
+            padding: 16px;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(10px);
+            border: 1px solid #eeeeee;
+            border-radius: 14px;
+            box-shadow: 0 8px 26px rgba(0,0,0,0.10);
+        }
+        .sidebar h3 {
+            margin: 0 0 14px;
+            font-size: 15px;
+            color: #5c4033;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .place-card {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #ffffff;
+            border: 1px solid #eeeeee;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color .2s, transform .2s, box-shadow .2s;
+        }
+        .place-card:hover {
+            border-color: #3eb489;
+            transform: translateX(3px);
+            box-shadow: 0 6px 14px rgba(62,180,137,0.12);
+        }
+        .place-title {
+            font-weight: 700;
+            color: #5c4033;
+        }
+        .place-vibe {
+            margin-top: 4px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        .status-badge {
+            float: right;
+            padding: 3px 9px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .status-low { background: #e6f9ed; color: #1f9254; border: 1px solid #b9ecd0; }
+        .status-med { background: #fff9db; color: #d68910; border: 1px solid #ffe58f; }
+
+        .balloon-click-btn {
+            width: 100%;
+            margin-top: 8px;
+            padding: 7px 12px;
+            color: #ffffff;
+            font-weight: 600;
+            background: #5c4033;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        .balloon-click-btn:hover { background: #3eb489; }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 28px;
+            text-align: center;
+        }
+        .team-member {
+            padding: 26px 18px;
+            background: #ffffff;
+            border: 1px solid #eeeeee;
+            border-radius: 16px;
+            transition: transform .25s, box-shadow .25s, border-color .25s;
+        }
+        .team-member:hover {
+            transform: translateY(-4px);
+            border-color: #3eb489;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.07);
+        }
+        .team-avatar {
+            font-size: 56px;
+            margin-bottom: 12px;
+        }
+        .team-member h3 { margin: 0 0 4px; color: #5c4033; }
+        .team-member p { margin: 0; color: #777; font-size: 14px; }
+
+        footer {
+            margin-top: 20px;
+            padding: 44px 20px;
+            text-align: center;
+            color: #ffffff;
+            background: #5c4033;
+        }
+        footer p { margin: 0; }
+        footer .small {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #c9b9ae;
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 10px; padding: 15px 20px; }
+            nav a { margin: 0 10px; }
+
+            section { padding: 60px 20px; }
+
+            .hero { flex-direction: column; text-align: center; padding-top: 30px; }
+            .hero-text h1 { font-size: 32px; }
+            .hero-image { font-size: 90px; }
+
+            .steps { flex-direction: column; }
+            .sidebar { display: none; }
+        }
+        .balloon-click-btn + .balloon-click-btn {
+            margin-top: 6px;
+            background: #3eb489;
+        }
+        .balloon-click-btn + .balloon-click-btn:hover {
+            background: #5c4033;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Синхрон</div>
+        <nav>
+            <a href="#problem">Проблемы</a>
+            <a href="#solution">Решение</a>
+            <a href="#map-section">Карта</a>
+            <a href="#team">Команда</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-text">
+            <h1>Идеальное место для досуга — <em>в один клик</em></h1>
+            <p>Синхронизируйте свои планы, настроение и геопозицию с друзьями. Забудьте о часах споров в мессенджерах.</p>
+            <a href="#map-section" class="btn btn-primary">Найти место рядом</a>
+            <a href="#problem" class="btn btn-secondary">Узнать больше</a>
+        </div>
+        <div class="hero-image">📍</div>
+    </section>
+
+    <section id="problem">
+        <h2 class="section-title">Почему сложно отдохнуть?</h2>
+        <div class="grid-3">
+            <div class="card">
+                <h3>Пролистывание подборок</h3>
+                <p>Вы тратите больше времени на пролистывание отзывов и списков, чем на сам отдых.</p>
+            </div>
+            <div class="card">
+                <h3>Ожидание и Реальность</h3>
+                <p>Приезжаете в тихое кафе поработать, а там шумно, темно и совсем нет свободных мест.</p>
+            </div>
+            <div class="card">
+                <h3>Географический спор</h3>
+                <p>Сложно выбрать точку встречи для компании друзей, живущих в разных концах города.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="solution">
+        <h2 class="section-title">«Синхрон» — твой радар досуга</h2>
+        <div class="grid-3">
+            <div class="card solution-card">
+                <h3>Фильтры по настроению</h3>
+                <p>Ищите места по атмосфере.</p>
+            </div>
+            <div class="card solution-card">
+                <h3>Живой мониторинг</h3>
+                <p>Узнавайте текущую загруженность заведения в реальном времени прямо перед выходом.</p>
+            </div>
+            <div class="card solution-card">
+                <h3>Баланс геопозиций</h3>
+                <p>Приложение автоматически рассчитает идеальную среднюю точку пересечения маршрутов всех участников.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works">
+        <h2 class="section-title">Три простых шага</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <h4>Выбрать категорию</h4>
+                <p>Укажи, что тебе нужно прямо сейчас: кофе, работа или отдых.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <h4>Включить радар</h4>
+                <p>Разреши доступ к геопозиции, чтобы увидеть места поблизости.</p>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <h4>Поймать настроение</h4>
+                <p>Смотри загруженность, выбирай лучшее место и строй маршрут.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="map-section">
+        <h2 class="section-title">Попробуй интерактивный прототип</h2>
+
+        <div class="app-block">
+            <div class="filter-container">
+                <button class="filter-btn active" onclick="showCategory('all', this)">Все места</button>
+                <button class="filter-btn" onclick="showCategory('coworking', this)">Места для работы</button>
+                <button class="filter-btn" onclick="showCategory('cafe', this)">Кофейни</button>
+                <button class="filter-btn" onclick="showCategory('vibe', this)">Зоны для отдыха</button>
+            </div>
+
+            <div class="map-layout">
+                <div class="sidebar">
+                    <h3>Места рядом с вами:</h3>
+                    <div id="places-list"></div>
+                </div>
+                <div id="map"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="team">
+        <h2 class="section-title">Команда стартапа</h2>
+        <div class="team-grid">
+            <div class="team-member">
+                <div class="team-avatar">👨‍💻</div>
+                <h3>Алексей</h3>
+                <p>UI/UX Designer</p>
+            </div>
+            <div class="team-member">
+                <div class="team-avatar">👨‍💻</div>
+                <h3>Латиф</h3>
+                <p>Product Fullstack</p>
+            </div>
+            <div class="team-member">
+                <div class="team-avatar">👨‍💻</div>
+                <h3>Арсений</h3>
+                <p>AI Fullstack</p>
+            </div>
+            <div class="team-member">
+                <div class="team-avatar">📈</div>
+                <h3>Милана</h3>
+                <p>Analytics</p>
+            </div>
+            <div class="team-member">
+                <div class="team-avatar">📈</div>
+                <h3>Михаил</h3>
+                <p>Marketing n Growth</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 Стартап «Синхрон». Все права защищены.</p>
+        <p class="small">Сделано специально для презентации MVP.</p>
+    </footer>
+
+    <script>
+        const ORS_API_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImQ4ZmVlOTU0M2EzYTRhOWNiNjE5OWY2ZDM3YTM3ZmYzIiwiaCI6Im11cm11cjY0In0=';
+    
+        const places = [
+            { id: 1, name: "Коворкинг",     type: "coworking", lat: 55.7532, lng: 37.6225, vibe: "Продуктивно / Тихо", load: "Свободно", loadClass: "status-low" },
+            { id: 2, name: "Пространство",  type: "coworking", lat: 55.7578, lng: 37.6101, vibe: "Лекции",             load: "Умеренно", loadClass: "status-med" },
+            { id: 3, name: "Кофейня",       type: "cafe",      lat: 55.7495, lng: 37.6012, vibe: "Эстетично",          load: "Свободно", loadClass: "status-low" },
+            { id: 4, name: "Кафе-галерея",  type: "cafe",      lat: 55.7611, lng: 37.6330, vibe: "Шумно",              load: "Умеренно", loadClass: "status-med" },
+            { id: 5, name: "Арт-двор",      type: "vibe",      lat: 55.7422, lng: 37.6155, vibe: "Расслабленно",       load: "Свободно", loadClass: "status-low" },
+            { id: 6, name: "ПК-Клуб",       type: "vibe",      lat: 55.7550, lng: 37.6400, vibe: "Консоли",            load: "Умеренно", loadClass: "status-med" }
+        ];
+    
+        let currentCategory = 'all';
+        let map;
+        let markers = [];
+    
+        let userCoords = null;
+        let customStartCoords = null;
+        let startPlacemark = null;
+        let activeRoute = null; 
+        let routeInfoPlacemark = null; 
+        let userPlacemark = null; 
+    
+        ymaps.ready(initMap);
+    
+        function initMap() {
+            map = new ymaps.Map("map", {
+                center: [55.7558, 37.6173],
+                zoom: 13,
+                controls: ['zoomControl', 'geolocationControl']
+            });
+    
+            map.events.add('click', function (e) {
+                if (e.get('shiftKey')) {
+                    const coords = e.get('coords');
+                    setCustomStart(coords, 'Выбранная точка');
+                }
+            });
+    
+            ymaps.geolocation.get({
+                provider: 'browser',
+                mapStateAutoApply: false
+            }).then(function (result) {
+                const firstGeoObject = result.geoObjects.get(0);
+                if (firstGeoObject) {
+                    const coords = firstGeoObject.geometry.getCoordinates();
+                    userCoords = coords;
+    
+                    userPlacemark = new ymaps.Placemark(coords, {
+                        hintContent: 'Вы здесь',
+                        balloonContent: 'Ваше текущее местоположение'
+                    }, {
+                        preset: 'islands#blueHomeIcon'
+                    });
+                    map.geoObjects.add(userPlacemark);
+                    map.setCenter(coords, 14, { duration: 400 });
+                }
+            }).catch(function () {
+                console.warn('Не удалось определить местоположение.');
+            });
+    
+            showCategory('all', document.querySelector('.filter-btn'));
+        }
+    
+        function showCategory(category, button) {
+            currentCategory = category;
+    
+            const allButtons = document.querySelectorAll('.filter-btn');
+            for (let i = 0; i < allButtons.length; i++) {
+                allButtons[i].classList.remove('active');
+            }
+            if (button) button.classList.add('active');
+    
+            drawMarkers();
+            drawList();
+        }
+    
+        function drawMarkers() {
+            for (let i = 0; i < markers.length; i++) {
+                map.geoObjects.remove(markers[i]);
+            }
+            markers = [];
+    
+            for (let i = 0; i < places.length; i++) {
+                const place = places[i];
+                if (currentCategory !== 'all' && place.type !== currentCategory) continue;
+    
+                const mark = new ymaps.Placemark([place.lat, place.lng], {
+                    balloonContentHeader: '<b>' + place.name + '</b>',
+                    balloonContentBody:
+                        '<p style="margin:5px 0;font-size:13px;color:#555;">Вайб: ' + place.vibe + '</p>' +
+                        '<p style="font-size:12px;">Загрузка: <b>' + place.load + '</b></p>' +
+                        '<button class="balloon-click-btn" onclick="setStartFromPlace(' + place.lat + ',' + place.lng + ', \'' + place.name.replace(/'/g, "\\'") + '\')">Сделать точкой старта</button>' +
+                        '<button class="balloon-click-btn" onclick="buildRoute(' + place.lat + ',' + place.lng + ', \'' + place.name.replace(/'/g, "\\'") + '\')">Построить маршрут</button>',
+                    hintContent: place.name
+                }, {
+                    preset: 'islands#greenCircleDotIcon'
+                });
+    
+                mark.events.add('click', function () {
+                    mark.balloon.open();
+                });
+    
+                map.geoObjects.add(mark);
+                markers.push(mark);
+            }
+        }
+    
+        function drawList() {
+            const list = document.getElementById('places-list');
+            list.innerHTML = '';
+    
+            for (let i = 0; i < places.length; i++) {
+                const place = places[i];
+                if (currentCategory !== 'all' && place.type !== currentCategory) continue;
+    
+                const card = document.createElement('div');
+                card.className = 'place-card';
+                card.innerHTML =
+                    '<span class="status-badge ' + place.loadClass + '">' + place.load + '</span>' +
+                    '<div class="place-title">' + place.name + '</div>' +
+                    '<div class="place-vibe">' + place.vibe + '</div>';
+    
+                card.onclick = function () {
+                    map.setCenter([place.lat, place.lng], 15, { duration: 300 });
+                    setTimeout(function () {
+                        for (let j = 0; j < markers.length; j++) {
+                            const coords = markers[j].geometry.getCoordinates();
+                            if (coords[0] === place.lat && coords[1] === place.lng) {
+                                markers[j].balloon.open();
+                                break;
+                            }
+                        }
+                    }, 350);
+                };
+    
+                list.appendChild(card);
+            }
+    
+            if (list.children.length === 0) {
+                list.innerHTML = '<p style="color:#999;font-size:13px;text-align:center;">Мест нет.</p>';
+            }
+        }
+        function setCustomStart(coords, title) {
+            customStartCoords = coords;
+    
+            if (startPlacemark) {
+                map.geoObjects.remove(startPlacemark);
+            }
+    
+            startPlacemark = new ymaps.Placemark(coords, {
+                hintContent: 'Точка старта',
+                balloonContentHeader: '<b>Точка старта</b>',
+                balloonContentBody:
+                    '<p style="font-size:12px;margin:4px 0;">' + (title || 'Выбранная точка') + '</p>' +
+                    '<p style="font-size:11px;color:#777;margin:4px 0;">Перетащите метку, чтобы изменить старт</p>' +
+                    '<button class="balloon-click-btn" onclick="resetStart()">Сбросить старт</button>'
+            }, {
+                preset: 'islands#orangeIcon',
+                draggable: true
+            });
+    
+            startPlacemark.events.add('dragend', function () {
+                customStartCoords = startPlacemark.geometry.getCoordinates();
+            });
+    
+            map.geoObjects.add(startPlacemark);
+            startPlacemark.balloon.open();
+        }
+        function setStartFromPlace(lat, lng, name) {
+            setCustomStart([lat, lng], name);
+        }
+        function resetStart() {
+            if (startPlacemark) {
+                map.geoObjects.remove(startPlacemark);
+                startPlacemark = null;
+            }
+            customStartCoords = null;
+        }
+        function buildRoute(lat, lng, name) {
+            const start = customStartCoords
+                ? customStartCoords
+                : (userCoords ? userCoords : map.getCenter());
+            const end = [lat, lng];
+    
+            if (activeRoute) {
+                map.geoObjects.remove(activeRoute);
+                activeRoute = null;
+            }
+            if (routeInfoPlacemark) {
+                map.geoObjects.remove(routeInfoPlacemark);
+                routeInfoPlacemark = null;
+            }
+    
+            const loadingBalloon = new ymaps.Placemark(end, {
+                balloonContent: 'Строим маршрут…'
+            });
+            map.geoObjects.add(loadingBalloon);
+            loadingBalloon.balloon.open();
+    
+            const body = {
+                coordinates: [
+                    [start[1], start[0]],
+                    [end[1],   end[0]]
+                ],
+                format: 'geojson'
+            };
+    
+            fetch('https://api.openrouteservice.org/v2/directions/driving-car/geojson', {
+                method: 'POST',
+                headers: {
+                    'Authorization': ORS_API_KEY,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body)
+            })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('ORS HTTP ' + response.status);
+                }
+                return response.json();
+            })
+            .then(function (data) {
+                map.geoObjects.remove(loadingBalloon);
+    
+                const feature = data.features && data.features[0];
+                if (!feature) throw new Error('Пустой ответ ORS');
+    
+                const coords = feature.geometry.coordinates.map(function (c) {
+                    return [c[1], c[0]];
+                });
+    
+                activeRoute = new ymaps.Polyline(coords, {}, {
+                    strokeColor: '#3eb489',
+                    strokeWidth: 5,
+                    strokeOpacity: 0.9
+                });
+                map.geoObjects.add(activeRoute);
+    
+                const summary = feature.properties.summary || {};
+                const distanceKm = (summary.distance / 1000).toFixed(2);
+                const timeMin = Math.round(summary.duration / 60);
+    
+                map.setBounds(activeRoute.geometry.getBounds(), {
+                    checkZoomRange: true,
+                    zoomMargin: 40
+                });
+    
+                routeInfoPlacemark = new ymaps.Placemark(end, {
+                    balloonContentHeader: '<b>' + name + '</b>',
+                    balloonContentBody:
+                        '<p style="margin:6px 0;font-size:13px;">' +
+                        'Расстояние: <b>' + distanceKm + ' км</b><br>' +
+                        'В пути: <b>~' + timeMin + ' мин</b>' +
+                        '</p>' +
+                        '<button class="balloon-click-btn" onclick="clearRoute()">Убрать маршрут</button>'
+                }, {
+                    preset: 'islands#greenCircleDotIcon'
+                });
+                map.geoObjects.add(routeInfoPlacemark);
+                routeInfoPlacemark.balloon.open();
+            })
+            .catch(function (err) {
+                map.geoObjects.remove(loadingBalloon);
+                console.error('Ошибка построения маршрута:', err);
+                alert('Не удалось построить маршрут. Проверьте ключ OpenRouteService и подключение к интернету.');
+            });
+        }
+    
+        function clearRoute() {
+            if (activeRoute) {
+                map.geoObjects.remove(activeRoute);
+                activeRoute = null;
+            }
+            if (routeInfoPlacemark) {
+                map.geoObjects.remove(routeInfoPlacemark);
+                routeInfoPlacemark = null;
+            }
+        }
+    </script>
+</body>
+</html>
